@@ -7,7 +7,7 @@
  <input type="file" @change="onFileChange" />
   
       <div id="preview">
-    <img v-if="url" :src="url" />
+    <img class= "profilepic" v-if="url" :src="url" />
   </div>
        
         <input type="submit" value="Upload Image" class="btn" @click="upload">
@@ -18,12 +18,19 @@
 </template>
 
 <script>
+import { API } from 'aws-amplify';
 import { Storage }  from 'aws-amplify';
+import { v4 as uuidv4 } from 'uuid';
 import profile_icon from '@/assets/profile.png';
+
+import {createUser} from '../src/graphql/mutations';
     export default {
         mounted(){
             this.first_name = this.username;
             this.email = this.email;
+            console.log(this.email);
+         
+
             
 
         },
@@ -38,11 +45,27 @@ import profile_icon from '@/assets/profile.png';
                first_name:String,
            url:profile_icon,
            filename:String,
-           filePath:String
+           filePath:String,
            }
 
        },
        methods:{
+           
+           
+ async addUserToDb(){
+                const uuid = uuidv4();
+               const {username,email,filename} = this;
+               const user = {id:uuid,username,email,profilePicUrl:filename};
+               await API.graphql({
+                   query:createUser,
+                   variables:{input:user},
+               }).then((result) =>{
+                   console.log("result is"+result);
+               })
+               console.log("successfully uploaded");
+               this.$router.push({name:'home',params:{id: uuid}});
+           },
+          
            onFileChange(e) {
       const file = e.target.files[0];
       console.log(file);
@@ -57,9 +80,17 @@ import profile_icon from '@/assets/profile.png';
           
            contentType:this.filePath.type,
     progressCallback(progress) {
+        if(`${progress.loaded}` === `${progress.total}` ){
+          
+         
+      
+        }
         console.log(`Uploaded: ${progress.loaded}/${progress.total}`);
   },
-});
+}).then((result) =>{
+
+    this.addUserToDb();
+})
     }
 
          
@@ -97,18 +128,5 @@ input[type="file"]{
     margin-top: 20px;
     margin-bottom: 20px;
 }
-#preview {
 
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-#preview img {
-  width: 200px;
-  height: 200px;
-  margin: 10px;
-  border-radius: 100%;
-  object-fit: cover;
-}
 </style>
