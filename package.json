@@ -1,0 +1,22 @@
+{
+  "name": "socially-app",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "nuxt",
+    "build": "nuxt build",
+    "start": "nuxt start",
+    "generate": "nuxt generate"
+  },
+  "dependencies": {
+    "@aws-amplify/ui-components": "^1.2.0",
+    "@aws-amplify/ui-vue": "^1.0.7",
+    "aws-amplify": "^3.3.27",
+    "core-js": "^3.9.1",
+    "node-sass": "^4.13.1",
+    "normalize.css": "^8.0.1",
+    "nuxt": "^2.15.3",
+    "sass-loader": "^7.1.0"
+  },
+  "devDependencies": {}
+}

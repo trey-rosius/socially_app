@@ -1,0 +1,53 @@
+type User @model 
+@key(fields: ["id", "createdAt"])
+@key()
+@auth(rules:[
+    { allow: owner },
+      { allow: private, operations: [read] }
+     
+]) {
+  id: ID!
+  username: String!
+  profilePicUrl:String!
+  createdAt: AWSDateTime!
+  updateAt: AWSDateTime!
+  posts: [Post] @connection(name: "UserPosts")
+}
+type Post @model 
+@key(name:"fetchPostsByStatus",fields:["status"],queryField:"fetchPostsByStatus")
+
+@auth(rules:[
+    { allow: owner },
+      { allow: private, operations: [read] }
+      
+])
+{
+  id: ID!
+  postText: String!
+  postImageUrl:String!
+  status:Status!
+  userID:ID!
+  user: User @connection(name: "UserPosts")
+  comments: [Comment] @connection(name: "PostComments")
+}
+type Comment @model
+@key(name:"fetchCommentsByPost",fields:["postID",""])
+@auth(rules:[
+    { allow: owner },
+      { allow: private, operations: [read] }
+     
+]) {
+  id: ID!
+  commentText: String!
+  postID:ID!
+  userID:ID!
+  post: Post @connection(name: "PostComments")
+  user:User @connection(name:"UserPosts")
+}
+
+enum Status {
+  DELIVERED
+  IN_TRANSIT
+  PENDING
+  UNKNOWN
+}
