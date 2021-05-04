@@ -9,6 +9,7 @@
       <div id="preview">
     <img class= "profilepic" v-if="url" :src="url" />
   </div>
+
        
         <input type="submit" value="Upload Image" class="btn" @click="upload">
 
@@ -45,7 +46,8 @@ import {createUser} from '../src/graphql/mutations';
                first_name:String,
            url:profile_icon,
            filename:String,
-           filePath:String,
+           filePath:String
+         
            }
 
        },
@@ -55,7 +57,10 @@ import {createUser} from '../src/graphql/mutations';
  async addUserToDb(){
                 const uuid = uuidv4();
                const {username,email,filename} = this;
-               const user = {id:uuid,username,email,profilePicUrl:filename};
+               const signedURL = await Storage.get(filename); 
+               const user = {id:uuid,username,email,profilePicUrl:signedURL};
+               
+               console.log("signed url"+signedURL);
                await API.graphql({
                    query:createUser,
                    variables:{input:user},

@@ -4,13 +4,13 @@
         <div class="app-name">Socially</div>
     </section>
     <div class="content">
-
+   
         <input type="file" @change="onFileChange" />
   
       <div id="preview">
     <img class= "postpic" v-if="url" :src="url" />
   </div>
-        <textarea v-model="postText" class="content__post" rows="4" cols="10" placeholder="write something ....."/><br>
+        <textarea v-model="postText" class="content__post" rows="4" cols="10"/><br>
        
        
         <input type="submit" value="Add Post" class="btn" @click="addPost">
@@ -23,17 +23,43 @@
 
 <script>
 import add_image from '@/assets/add_pic.svg';
+import { API } from 'aws-amplify';
+import { Storage }  from 'aws-amplify';
+import { v4 as uuidv4 } from 'uuid';
+import {createPost} from '../src/graphql/mutations';
     export default {
+        props:{
+           userId:String
+
+       },
         data(){
             return {
-               postText:String,
+               postText:undefined,
               url:add_image,
                filename:String,
            filePath:String,
             }
         },
         methods:{
-            
+
+           async addPostToDb(){
+                const uuid = uuidv4();
+               const {userId,postText,filename} = this;
+               const signedURL = await Storage.get(filename); 
+               const post = {id:uuid,userID:userId,postText,status:"CREATED",postImageUrl:signedURL};
+               
+               console.log("signed url"+signedURL);
+               await API.graphql({
+                   query:createPost,
+                   variables:{input:post},
+               }).then((result) =>{
+                   console.log("result is"+result);
+               })
+               console.log("successfully uploaded");
+               this.postText = false;
+             //  this.$router.push({name:'home',params:{id: uuid}});
+           },
+
               
            onFileChange(e) {
       const file = e.target.files[0];
@@ -58,7 +84,7 @@ import add_image from '@/assets/add_pic.svg';
   },
 }).then((result) =>{
 
-    this.addUserToDb();
+    this.addPostToDb();
 })
     }
 
@@ -72,10 +98,10 @@ import add_image from '@/assets/add_pic.svg';
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  background-color: white;
   
   height: 100vh;
-
-  width: 100%;
+flex-basis: 30%;
   
  
 }
