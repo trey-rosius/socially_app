@@ -207,3 +207,83 @@ export const listComments = /* GraphQL */ `
     }
   }
 `;
+export const getUserByEmail = /* GraphQL */ `
+  query GetUserByEmail(
+    $email: String
+    $sortDirection: ModelSortDirection
+    $filter: ModelUserFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    getUserByEmail(
+      email: $email
+      sortDirection: $sortDirection
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        id
+        username
+        email
+        profilePicUrl
+        posts {
+          nextToken
+        }
+        createdAt
+        updatedAt
+        owner
+      }
+      nextToken
+    }
+  }
+`;
+export const getCommentsByPost = /* GraphQL */ `
+  query GetCommentsByPost(
+    $postID: ID
+    $id: ModelIDKeyConditionInput
+    $sortDirection: ModelSortDirection
+    $filter: ModelCommentFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    getCommentsByPost(
+      postID: $postID
+      id: $id
+      sortDirection: $sortDirection
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        id
+        commentText
+        postID
+        userID
+        post {
+          id
+          userID
+          postText
+          postImageUrl
+          status
+          createdAt
+          updatedAt
+          owner
+        }
+        user {
+          id
+          username
+          email
+          profilePicUrl
+          createdAt
+          updatedAt
+          owner
+        }
+        createdAt
+        updatedAt
+        owner
+      }
+      nextToken
+    }
+  }
+`;

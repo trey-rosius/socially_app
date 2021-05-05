@@ -174,6 +174,7 @@ console.log(this.user);
 .middle{
     display: flex;
     justify-content: space-between;
+    overflow-y: scroll;
 
 }
 .create-post{

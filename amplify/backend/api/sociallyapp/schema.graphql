@@ -1,5 +1,5 @@
 type User @model 
-@key(name:"byEmail",fields:["email"]) 
+@key(name:"byEmail",fields:["email"],queryField:"getUserByEmail") 
 @auth(rules:[
     { allow: owner },
       { allow: private, operations: [read] }
@@ -30,7 +30,7 @@ type Post @model @key(name: "byUser", fields: ["userID"])
   user: User @connection(fields:["userID"])
   comments: [Comment] @connection(keyName: "byPost", fields: ["id"])
 }
-type Comment @model @key(name:"byPost",fields:["postID","id"]) 
+type Comment @model @key(name:"byPost",fields:["postID","id"],queryField:"getCommentsByPost") 
 @auth(rules:[
     { allow: owner },
       { allow: private, operations: [read] }
