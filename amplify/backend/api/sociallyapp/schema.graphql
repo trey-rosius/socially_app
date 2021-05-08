@@ -1,5 +1,6 @@
 type User @model 
 @key(name:"byEmail",fields:["email"],queryField:"getUserByEmail") 
+
 @auth(rules:[
     { allow: owner },
       { allow: private, operations: [read] }
@@ -10,9 +11,9 @@ type User @model
   username: String!
   email:String!
   profilePicUrl:String!
-  posts: [Post] @connection(keyName: "byUser",fields:["id"])
+  posts: [Post] @connection
 }
-type Post @model @key(name: "byUser", fields: ["userID"])
+type Post @model 
 
 @auth(rules:[
     { allow: owner },
@@ -28,9 +29,9 @@ type Post @model @key(name: "byUser", fields: ["userID"])
   status:Status!
   
   user: User @connection(fields:["userID"])
-  comments: [Comment] @connection(keyName: "byPost", fields: ["id"])
+  comments: [Comment]
 }
-type Comment @model @key(name:"byPost",fields:["postID","id"],queryField:"getCommentsByPost") 
+type Comment @model 
 @auth(rules:[
     { allow: owner },
       { allow: private, operations: [read] }

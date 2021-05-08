@@ -65,6 +65,7 @@
                   <span>Search</span>
                 </button>
               </form>
+
             <div class="user-settings">
                  <amplify-s3-image :img-key="user.profilePicUrl" />
             <img class="user-img" :src="user.profilePicUrl" alt="profile-picture">
@@ -72,14 +73,18 @@
              <svg viewBox="0 0 492 492" fill="currentColor">
               <path d="M484.13 124.99l-16.11-16.23a26.72 26.72 0 00-19.04-7.86c-7.2 0-13.96 2.79-19.03 7.86L246.1 292.6 62.06 108.55c-5.07-5.06-11.82-7.85-19.03-7.85s-13.97 2.79-19.04 7.85L7.87 124.68a26.94 26.94 0 000 38.06l219.14 219.93c5.06 5.06 11.81 8.63 19.08 8.63h.09c7.2 0 13.96-3.57 19.02-8.63l218.93-219.33A27.18 27.18 0 00492 144.1c0-7.2-2.8-14.06-7.87-19.12z"></path>
              </svg>
-             <button class="create-post" @click="showCreate">
+            
+             <button class="create-post" @click="createPost">
                  <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" x="0" y="0" viewBox="0 0 488 488" xml:space="preserve"><path d="M484.26 157.654L381.968 75.239c-3.6-2.901-8.699-3.001-12.299-.2L206.983 198.661c-3.6 2.701-4.9 7.501-3.2 11.702 33.897 83.115 37.697 129.123 14.199 184.633H9.999c-5.5 0-9.999 4.501-9.999 10.002S4.5 415 9.999 415H225.781c.2 0 .4-.1.6-.1.1 0 .2 0 .3-.1.2 0 .5-.1.7-.2.1 0 .2-.1.3-.1h.1c.1 0 .2-.1.3-.1.1 0 .2-.1.3-.1s.2-.1.3-.1c.1 0 .1-.1.2-.1 0 0 .1 0 .1-.1.1 0 .1-.1.2-.1.1-.1.2-.1.3-.2.1-.1.2-.1.3-.2.1 0 .2-.1.2-.2.1 0 .1-.1.2-.1 0 0 .1 0 .1-.1 3.2-2.3 6.299-4.501 9.299-6.601 41.997-30.005 62.995-45.008 176.485-35.206 4.7.4 8.999-2.5 10.399-7.001l61.095-196.035c1.2-3.802-.1-8.103-3.299-10.603zm-74.494 193.135c-77.893-6.201-113.99 0-142.888 14.503l62.795-83.615c4.4 1.9 9.199 3.101 14.199 3.401h1.9c9.899 0 19.198-3.601 26.598-10.302 8.099-7.401 12.799-17.603 13.299-28.805 1-22.704-16.299-42.107-38.497-43.108-10.799-.5-21.098 3.301-29.198 10.602-8.099 7.401-12.799 17.503-13.299 28.505-.5 10.302 3.1 20.004 9.199 27.605l-62.795 83.515c1.8-11.702 2.4-23.404 1.8-35.506-1.5-29.805-9.999-63.211-27.598-107.619l150.287-114.32 90.892 73.313-56.694 181.831zm-85.093-108.02c.3-5.601 2.7-10.802 6.799-14.603 3.9-3.501 8.699-5.401 13.799-5.401h.9c11.299.5 19.998 10.502 19.498 22.204-.3 5.901-2.7 11.202-6.799 14.903-3.8 3.501-8.799 5.301-13.999 5.101-4.3-.1-8.199-1.6-11.399-4.001-.1-.1-.3-.2-.4-.4-.1-.1-.2-.1-.3-.2-5.199-4.1-8.499-10.601-8.099-17.603z"/></svg>
              </button>
             </div>
            </div>
-           <div class="middle">
+          <create-post :userId="userId" v-if="show" @close="createPost">
+                
+             </create-post>
  <div class="main-content">
-     <div v-for="post in posts" :key="post.id">
+    
+     <span v-for="post in posts" :key="post.id">
 <div class="post">
                <a href="#" class="name-tag">{{post.user.username}}</a>
                <div class="author-img__wrapper">
@@ -91,15 +96,13 @@
                 <img class="img" :src="post.postImageUrl" alt="Post Image">
              </div> 
 
-     </div>
-             
+     </span>
+        
         
            </div>
-           <div v-if="show">
-<create :userId="user.id"/>
-           </div>
+          
            
-           </div>
+           
           
        </div>
         </div>
@@ -108,11 +111,11 @@
 <script>
 import { API } from 'aws-amplify';
 import {getUser} from '../src/graphql/queries';
-import create from './create.vue';
+import CreatePost from '../components/CreatePost.vue';
 import {onCreatePost} from '../src/graphql/subscriptions';
 import { listPosts} from '../src/graphql/queries';
     export default {
-  components: { create },
+  components: { CreatePost },
   created(){
   this.getPosts();
   this.subscribe();
@@ -122,12 +125,15 @@ import { listPosts} from '../src/graphql/queries';
             return {
                 user:Object,
                 show:false,
-                posts:[]
+                posts:[],
+                userId:String
+
             }
         },
         //Receiving parameters in Home component
 mounted() {
     console.log('Params: ', this.$route.params);
+    this.userId = this.$route.params.id;
     this.getUserDetails(this.$route.params.id);
    
        
@@ -144,8 +150,10 @@ methods:{
 
 console.log(this.user);
     },
-    showCreate(e){
-     this.show = !this.show;
+    createPost(e){
+        this.show =!this.show;
+    
+   //  this.$router.push({name:'CreatePost',params:{id: this.userId}});
     },
      async getPosts(){
        const posts = await API.graphql({
@@ -196,5 +204,8 @@ height: 30px;
 
 fill: white;
 }
+}
+.lorem{
+    font-size: 300px;
 }
 </style>

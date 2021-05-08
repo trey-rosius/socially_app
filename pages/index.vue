@@ -1,13 +1,13 @@
 <template>
   <div>
-    <profile/>
+    <login/>
   </div>
 </template>
 
 <script>
-import profile from './profile.vue'
+import login from './login.vue'
 export default {
-  components: { profile },}
+  components: { login },}
 </script>
 
 <style>

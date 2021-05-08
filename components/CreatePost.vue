@@ -1,9 +1,19 @@
 <template>
-     <div class="container">
-    <section class="title">
+<div class="container">
+    
+    <transition name="modal">
+        <div class="modal-mask">
+          <div class="modal-wrapper">
+            <div class="modal-container">
+
+              <div class="modal-header">
+             
         <div class="app-name">Socially</div>
-    </section>
-    <div class="content">
+  
+              </div>
+
+              <div class="modal-body">
+                <div class="content">
    
         <input type="file" @change="onFileChange" />
   
@@ -17,8 +27,15 @@
 
         
       </div>
-   </div>
-   
+              </div>
+
+              
+            </div>
+          </div>
+        </div>
+      </transition>
+</div>
+
 </template>
 
 <script>
@@ -57,7 +74,7 @@ import {createPost} from '../src/graphql/mutations';
                })
                console.log("successfully uploaded");
                this.postText = false;
-             //  this.$router.push({name:'home',params:{id: uuid}});
+             this.$emit('close');
            },
 
               
@@ -70,7 +87,9 @@ import {createPost} from '../src/graphql/mutations';
       this.url = URL.createObjectURL(file);
     },
      addPost(e) {
-        console.log(this.filename);
+        console.log("clicked");
+        
+        
        const result = Storage.put(this.filename, this.filePath, {
           
            contentType:this.filePath.type,
@@ -86,6 +105,7 @@ import {createPost} from '../src/graphql/mutations';
 
     this.addPostToDb();
 })
+
     }
 
         }
