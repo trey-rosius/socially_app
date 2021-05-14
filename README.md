@@ -1,5 +1,9 @@
 # socially-app
 
+https://user-images.githubusercontent.com/29162353/118269029-16882200-b4b6-11eb-873d-f63878bbfcc5.mov
+
+
+
 ## Build Setup
 
 ```bash
